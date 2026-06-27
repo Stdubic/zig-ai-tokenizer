@@ -40,7 +40,12 @@ zig build bench
 
 ## Cursor MCP
 
-Build the CLI, then add to Cursor MCP settings:
+Count tokens and estimate cost from Cursor chat.
+
+### Setup
+
+1. Build the CLI (see Setup above)
+2. Add to `~/.cursor/mcp.json`:
 
 ```json
 {
@@ -54,11 +59,19 @@ Build the CLI, then add to Cursor MCP settings:
 }
 ```
 
-See [`cursor/mcp.example.json`](cursor/mcp.example.json).
+3. Reload Cursor: **Cmd+Shift+P** → **Developer: Reload Window**
+4. Check **Cursor Settings → MCP** — server should show **Connected**
 
-Tools exposed to Cursor:
-- `count_tokens` — count BPE tokens in text
-- `estimate_cost` — estimate API cost from token count
+See [docs/cursor-setup.md](docs/cursor-setup.md) for full guide and example prompts.
+
+### Tools
+
+| Tool | Example prompt |
+| --- | --- |
+| `count_tokens` | "Use count_tokens on: hello world" → **2 tokens** |
+| `estimate_cost` | "Estimate gpt4 cost for this prompt with 500 output tokens" |
+
+Supported models: `gpt4`, `gpt35`, `claude_sonnet`, `claude_opus`
 
 ## Notes
 
