@@ -64,7 +64,10 @@ Tools exposed to Cursor:
 
 - v1 uses GPT-2 BPE vocabulary, not cl100k/tiktoken
 - Token counts differ from Claude/GPT-4 API billing until cl100k support lands
-- Inspired by production token economics: [Token Tracking in Production](https://stdub.org/technical/2026/06/17/Token-Tracking-in-Production.html)
+
+## Related
+
+[Token Tracking in Production](https://stdub.org/technical/2026/06/17/Token-Tracking-in-Production.html) on [stdub.org](https://stdub.org)
 
 ## License
 
