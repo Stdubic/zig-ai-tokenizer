@@ -1,0 +1,16 @@
+.{
+    .name = .zig_ai_tokenizer,
+    .version = "0.1.0",
+    .fingerprint = 0xe7e37b77120615c,
+    .minimum_zig_version = "0.14.0",
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        "scripts",
+        "fixtures",
+        "mcp",
+        "LICENSE",
+        "README.md",
+    },
+}
