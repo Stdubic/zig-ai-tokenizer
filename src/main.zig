@@ -9,11 +9,14 @@ pub fn main() !void {
     defer _ = gpa.deinit();
     const allocator = gpa.allocator();
 
+    const stdout = std.io.getStdOut().writer();
+    const stderr = std.io.getStdErr().writer();
+
     const raw_args = try std.process.argsAlloc(allocator);
     defer std.process.argsFree(allocator, raw_args);
 
     if (raw_args.len < 2) {
-        printUsage();
+        try printUsage(stderr);
         return;
     }
 
@@ -41,18 +44,18 @@ pub fn main() !void {
         } else if (text == null) {
             text = arg;
         } else {
-            std.debug.print("Unexpected argument: {s}\n", .{arg});
+            try stderr.print("Unexpected argument: {s}\n", .{arg});
             return error.InvalidArgument;
         }
     }
 
     if (std.mem.eql(u8, command, "mcp")) {
-        try runMcp(allocator, vocab_path);
+        try runMcp(stderr);
         return;
     }
 
     const input = text orelse {
-        printUsage();
+        try printUsage(stderr);
         return;
     };
 
@@ -61,7 +64,7 @@ pub fn main() !void {
 
     if (std.mem.eql(u8, command, "count")) {
         const n = try tokenizer.count(input);
-        std.debug.print("{d} tokens\n", .{n});
+        try stdout.print("{d} tokens\n", .{n});
         return;
     }
 
@@ -70,33 +73,33 @@ pub fn main() !void {
         defer allocator.free(tokens);
 
         for (tokens, 0..) |token, idx| {
-            if (idx > 0) std.debug.print(", ", .{});
-            std.debug.print("{d}", .{token});
+            if (idx > 0) try stdout.print(", ", .{});
+            try stdout.print("{d}", .{token});
         }
-        std.debug.print("\n", .{});
+        try stdout.print("\n", .{});
         return;
     }
 
     if (std.mem.eql(u8, command, "cost")) {
         const model = cost.Model.fromName(model_name orelse "gpt4") orelse {
-            std.debug.print("Unknown model. Use: gpt4, gpt35, claude_sonnet, claude_opus\n", .{});
+            try stderr.print("Unknown model. Use: gpt4, gpt35, claude_sonnet, claude_opus\n", .{});
             return error.InvalidArgument;
         };
 
         const input_tokens = try tokenizer.count(input);
         const total = cost.estimateCost(model, input_tokens, output_tokens);
 
-        std.debug.print("Input tokens: {d}\n", .{input_tokens});
-        std.debug.print("Output tokens: {d}\n", .{output_tokens});
-        std.debug.print("Estimated cost: ${d:.6}\n", .{total});
+        try stdout.print("Input tokens: {d}\n", .{input_tokens});
+        try stdout.print("Output tokens: {d}\n", .{output_tokens});
+        try stdout.print("Estimated cost: ${d:.6}\n", .{total});
         return;
     }
 
-    printUsage();
+    try printUsage(stderr);
 }
 
-fn printUsage() void {
-    std.debug.print(
+fn printUsage(writer: anytype) !void {
+    try writer.print(
         \\Usage:
         \\  zig-ai-tokenizer count "text" [--vocab fixtures/tokenizer.json]
         \\  zig-ai-tokenizer encode "text" [--vocab fixtures/tokenizer.json]
@@ -106,8 +109,6 @@ fn printUsage() void {
     , .{});
 }
 
-fn runMcp(allocator: std.mem.Allocator, vocab_path: []const u8) !void {
-    _ = allocator;
-    _ = vocab_path;
-    std.debug.print("Use mcp/server.py for Cursor MCP integration.\n", .{});
+fn runMcp(writer: anytype) !void {
+    try writer.print("Use mcp/server.py for Cursor MCP integration.\n", .{});
 }
